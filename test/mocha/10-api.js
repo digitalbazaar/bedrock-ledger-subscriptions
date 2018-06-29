@@ -27,7 +27,7 @@ const urlObj = {
   pathname: config['ledger-agent'].routes.agents
 };
 
-describe('something', () => {
+describe('Ledger Subscription API', () => {
   let signedConfig;
   let defaultLedgerAgent;
   let publicLedgerAgent;
@@ -80,7 +80,7 @@ describe('something', () => {
   });
 
   const regularActor = mockData.identities.regularUser;
-  it('does something', done => {
+  it('records a subscription request', done => {
     const subscriptionRequest = {
       '@context': [
         'https://www.w3.org/ns/activitystreams',
