@@ -10,6 +10,7 @@ const brIdentity = require('bedrock-identity');
 const brLedgerAgent = require('bedrock-ledger-agent');
 const {config} = bedrock;
 const {constants} = config;
+const database = require('bedrock-mongodb');
 const helpers = require('./helpers');
 const jsigs = require('jsonld-signatures');
 const mockData = require('./mock.data');
@@ -93,17 +94,35 @@ describe('Ledger Subscription API', () => {
       }
     };
     async.auto({
-      get: callback => {
+      post: callback => {
         request.post(helpers.createHttpSignatureRequest({
           body: subscriptionRequest,
           identity: regularActor,
           url: defaultLedgerAgent.service.subscriptionService,
         }), (err, res) => {
           assertNoError(err);
-          res.statusCode.should.equal(204);
-          callback();
+          should.exist(res.headers.location);
+          res.statusCode.should.equal(201);
+          callback(null, res.headers.location);
         });
-      }
-    }, err => done(err));
+      },
+      test: ['post', (results, callback) => {
+        database.collections.ledgerSubscriptions.findOne(
+          {id: database.hash(results.post)}, (err, result) => {
+            if(err) {
+              return callback(err);
+            }
+            should.exist(result.subscription);
+            const {subscription} = result;
+            subscription.id.should.equal(results.post);
+            subscription.capability.should.eql(subscriptionRequest.capability);
+            // TODO: make more detailed assertions about the subscription record
+            callback();
+          });
+      }]
+    }, err => {
+      assertNoError(err);
+      done();
+    });
   });
 });
