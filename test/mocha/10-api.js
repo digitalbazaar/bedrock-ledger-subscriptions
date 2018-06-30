@@ -74,10 +74,13 @@ describe('Ledger Subscription API', () => {
           callback(err);
         });
       }]
-    }, err => done(err));
+    }, err => {
+      assertNoError(err);
+      done();
+    });
   });
   beforeEach(done => {
-    helpers.removeCollection('ledger_testLedger', done);
+    helpers.removeCollection('ledgerSubscriptions', done);
   });
 
   const regularActor = mockData.identities.regularUser;
@@ -120,6 +123,42 @@ describe('Ledger Subscription API', () => {
             callback();
           });
       }]
+    }, err => {
+      assertNoError(err);
+      done();
+    });
+  });
+  it('records a subscription request 2', done => {
+    const subscriptionRequest = {
+      '@context': [
+        'https://www.w3.org/ns/activitystreams',
+        constants.WEB_LEDGER_CONTEXT_V1_URL
+      ],
+      capability: {
+        id: `urn:uuid:${uuid()}`,
+        invoker: `urn:uuid:${uuid()}`,
+        invocationTarget: 'https://example.com/send/notifications/here',
+      }
+    };
+    async.auto({
+      post: callback => {
+        request.post(helpers.createHttpSignatureRequest({
+          body: subscriptionRequest,
+          identity: regularActor,
+          url: defaultLedgerAgent.service.subscriptionService,
+        }), (err, res) => {
+          assertNoError(err);
+          should.exist(res.headers.location);
+          res.statusCode.should.equal(201);
+          callback(null, res.headers.location);
+        });
+      },
+      test: ['post', (results, callback) => {
+        const ledgerNodeId = defaultLedgerAgent.node.id;
+        const event = {blockHeight: 5, ledgerNodeId};
+        bedrock.events.emit('bedrock-ledger-storage.block', event, callback);
+      }],
+      wait: ['test', (results, callback) => setTimeout(() => callback(), 250)]
     }, err => {
       assertNoError(err);
       done();

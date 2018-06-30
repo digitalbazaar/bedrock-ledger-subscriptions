@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "async": "^2.4.0",
-    "bedrock": "^1.8.0",
+    "bedrock": "^1.12.0",
     "bedrock-did-client": "digitalbazaar/bedrock-did-client#jsonld-1.1",
     "bedrock-docs": "^2.1.0",
     "bedrock-express": "^2.0.6",
@@ -16,7 +16,7 @@
     "bedrock-injector": "digitalbazaar/bedrock-injector#implementation",
     "bedrock-jobs": "^2.0.3",
     "bedrock-key": "^4.0.0",
-    "bedrock-ledger-agent": "digitalbazaar/bedrock-ledger-agent#master",
+    "bedrock-ledger-agent": "digitalbazaar/bedrock-ledger-agent#plugEndpoint",
     "bedrock-ledger-consensus-continuity": "digitalbazaar/bedrock-ledger-consensus-continuity#master",
     "bedrock-ledger-consensus-uni": "digitalbazaar/bedrock-ledger-consensus-uni#master",
     "bedrock-ledger-context": "^1.1.1",
